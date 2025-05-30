@@ -190,3 +190,15 @@ tension_member = {
     'has_subtypes': False,
     'success': True
 }
+
+compression_member = {
+    'data': [
+        {
+            'id': 1,
+            'name': 'Struts_In_Trusses',
+            'image_name': 'struts_in_trusses'
+        },
+    ],
+    'has_subtypes': False,
+    'success': True
+}

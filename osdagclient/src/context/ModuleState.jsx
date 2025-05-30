@@ -219,14 +219,21 @@ export const ModuleProvider = ({ children }) => {
       console.log('GETTING BEAM MATERIALS ',moduleName);
       const email = localStorage.getItem("email");
       console.log(email);
+      // Build the URL with or without email if present
+      let url = `${BASE_URL}populate?moduleName=${moduleName}`;
+      if (email) {
+        url += `&email=${encodeURIComponent(email)}`;
+      }
       const response = await fetch(
-        `${BASE_URL}populate?moduleName=${moduleName}&email=${email}`,
+        url,
         {
           method: "GET",
           mode: "cors",
           credentials: "include",
         }
       );
+      console.log("url of material list: ", url);
+      console.log("response : ", response);
       const jsonResponse = await response?.json();
 
       // diaptch the action
@@ -246,7 +253,6 @@ export const ModuleProvider = ({ children }) => {
       console.log("error : ", error);
     }
   };
-
 
   const getBeamMaterialList2 = async (
     moduleName,
@@ -499,8 +505,10 @@ export const ModuleProvider = ({ children }) => {
             state.currentModuleName,
             "Column-Flange-Beam-Web"
           );
+        } else if (module_id == "Struts In Trusses") {
+          getConnectivityList("Struts-In-Trusses")
+          getBeamMaterialList("Struts-In-Trusses");
         }
-
         getBoltDiameterList();
         getThicknessList();
         getPropertyClassList();

@@ -15,6 +15,7 @@ from .inputdata.cover_plate_bolted_input import CoverPlateBoltedInputData
 from .inputdata.beam_beam_end_plate_input import BeamBeamEndPlateInputData
 from .inputdata.cover_plate_weld_input import CoverPlateWeldedInputData
 from .inputdata.beam_to_column_end_plate_input import BeamToColumnEndPlateInputData
+from .inputdata.struts_in_trusses_input import StrutsInTrussesInputData
 
 INPUT_DATA_FACTORY = {
     'Fin-Plate-Connection': FinPlateInputData(),
@@ -24,7 +25,8 @@ INPUT_DATA_FACTORY = {
     'Cover-Plate-Bolted-Connection': CoverPlateBoltedInputData(),
     'Beam-Beam-End-Plate-Connection': BeamBeamEndPlateInputData(),
     'Cover-Plate-Welded-Connection': CoverPlateWeldedInputData(),
-    'Beam-to-Column-End-Plate-Connection': BeamToColumnEndPlateInputData()
+    'Beam-to-Column-End-Plate-Connection': BeamToColumnEndPlateInputData(),
+    "Struts-In-Trusses": StrutsInTrussesInputData(),
 }
 
 
@@ -107,6 +109,14 @@ class InputData(APIView):
             cookie_id = request.COOKIES.get('beam_to_column_end_plate_connection_session')
             print('cookie id in beam to column end plate connection input data ', cookie_id)
 
+        elif(moduleName=='Beam-to-Column-End-Plate-Connection'):
+            cookie_id = request.COOKIES.get('beam_to_column_end_plate_connection_session')
+            print('cookie id in beam to column end plate connection input data ', cookie_id)
+
+        elif(moduleName=='Struts-In-Trusses'):
+            cookie_id = request.COOKIES.get('struts_in_trusses_connection_session')
+            print('cookie id in beam to column end plate connection input data ', cookie_id)
+            
         if cookie_id == None or cookie_id == '': # Error Checking: If design session id provided.
             return Response("Error: Please open module", status=status.HTTP_400_BAD_REQUEST) # Returns error response.
         if not Design.objects.filter(cookie_id=cookie_id).exists(): # Error Checking: If design session exists.

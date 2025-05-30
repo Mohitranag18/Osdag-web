@@ -8,7 +8,8 @@ developed_modules = [
     "Cover Plate Bolted Connection",
     "Cover Plate Welded Connection",
     "Beam Beam End Plate Connection",
-    "Beam-to-Column End Plate Connection"
+    "Beam-to-Column End Plate Connection",
+    "Struts In Trusses"
 ]
 
 module_dict = [

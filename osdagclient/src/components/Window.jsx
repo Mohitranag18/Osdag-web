@@ -19,6 +19,7 @@ import mc_ctc_cpw from "../assets/MomentConnection/mc_ctc_cpw.png";
 import mc_ctc_ep from "../assets/MomentConnection/mc_ctc_ep.png";
 import mc_btc_ep from "../assets/MomentConnection/mc_btc_ep.png";
 import base_plate from "../assets/BasePlate/base_plate.png";
+import struts_in_trusses from "../assets/CompressionMember/struts_in_trusses.png"
 
 const image_map = {
   bolted_to_end,
@@ -35,6 +36,7 @@ const image_map = {
   mc_ctc_ep,
   mc_btc_ep,
   base_plate,
+  struts_in_trusses
 };
 
 const Window = () => {
@@ -205,7 +207,7 @@ const Window = () => {
               </div>
               <center>
                 <div className="">
-                  <button className="start-btn" onClick={() => {}}>
+                  <button className="start-btn" onClick={() => {navigate(`/design/${designType}/${selectedDesign}`)}}>
                     Start
                   </button>
                 </div>

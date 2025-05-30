@@ -21,6 +21,7 @@ from osdag.web_api.coverplatebolted_outputView import CoverPlateBoltedOutputData
 from osdag.web_api.beambeamendplate_outputView import BeamBeamEndPlateOutputData
 from osdag.web_api.cover_plate_weld_output import CoverPlateWeldedOutputData
 from osdag.web_api.beam_to_column_endplate_output import BeamToColumnEndPlateOutputData
+from osdag.web_api.struts_in_trusses_outputView import StrutsInTrussesOutputData
 # temporary
 app_name = 'osdag-web/'
 
@@ -61,6 +62,8 @@ urlpatterns = [
          views.get_base_plate, name='base-plate'),
     path('osdag-web/tension-member',
          views.get_tension_member, name='tension-member'),
+     path('osdag-web/compression-member',
+         views.get_compression_member, name='compression-member'),
 
     # New APIs
     path('populate', InputData.as_view()),
@@ -109,4 +112,7 @@ urlpatterns = [
     
     path('calculate-output/Beam-to-Column-End-Plate-Connection',
          BeamToColumnEndPlateOutputData.as_view(), name='Beam-to-Column-End-Plate-Connection'),
+
+     path('calculate-output/Struts-In-Trusses',
+         StrutsInTrussesOutputData.as_view(), name='Struts-In-Trusses'),
 ]

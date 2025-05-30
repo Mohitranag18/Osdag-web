@@ -2,7 +2,7 @@ from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 
 # importing data
-from .data.design_types import design_type_data, connections_data, shear_connection, moment_connection, b2b_splice, b2column, c2c_splice, base_plate, tension_member
+from .data.design_types import design_type_data, connections_data, shear_connection, moment_connection, b2b_splice, b2column, c2c_splice, base_plate, tension_member, compression_member
 
 
 # Create your views here.
@@ -53,3 +53,7 @@ def get_base_plate(request):
 def get_tension_member(request):
     return JsonResponse({'result': tension_member}, safe=False)
 
+
+@api_view(['GET'])
+def get_compression_member(request):
+    return JsonResponse({'result': compression_member}, safe=False)

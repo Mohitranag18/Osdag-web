@@ -87,6 +87,9 @@ class CreateSession(APIView):
         elif request.COOKIES.get("beam_to_column_end_plate_connection_session") is not None:
             print("beam to column end plate connection is there ")
             return JsonResponse({"status": "set"}, status=200)
+        elif request.COOKIES.get("struts_in_trusses_connection_session") is not None:
+            print("struts in trusses connection is there ")
+            return JsonResponse({"status": "set"}, status=200)
         if module_id not in developed_modules:  # Error Checking: Does module api exist
             print("module_id not developed")
             return JsonResponse(
@@ -102,7 +105,8 @@ class CreateSession(APIView):
             "Cover Plate Bolted Connection": "cover_plate_bolted_connection_session",
             "Beam Beam End Plate Connection": "beam_beam_end_plate_connection_session",
             "Cover Plate Welded Connection": "cover_plate_welded_connection_session",
-            "Beam-to-Column End Plate Connection": "beam_to_column_end_plate_connection_session", 
+            "Beam-to-Column End Plate Connection": "beam_to_column_end_plate_connection_session",
+            "Struts In Trusses": "struts_in_trusses_connection_session",
         }
 
         # Check for existing sessions
@@ -170,6 +174,7 @@ class DeleteSession(APIView):
             "Beam Beam End Plate Connection": "beam_beam_end_plate_connection_session",
             "Cover Plate Welded Connection": "cover_plate_welded_connection_session",
             "Beam-to-Column End Plate Connection": "beam_to_column_end_plate_connection_session",
+            "Struts In Trusses": "struts_in_trusses_connection_session",
         }
 
         if module_id not in cookie_keys:

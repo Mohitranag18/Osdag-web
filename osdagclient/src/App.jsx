@@ -31,6 +31,7 @@ import CoverPlateBolted from "./components/momentConnection/beamToBeamSplice/Cov
 import BeamBeamEndPlate from "./components/momentConnection/beamToBeamSplice/BeamBeamEndPlate";
 import CoverPlateWelded from "./components/momentConnection/beamToBeamSplice/CoverPlateWelded";
 import BeamToColumnEndPlate from "./components/momentConnection/BeamToColumnEndPlate";
+import StrutsInTrusses from "./components/compressionMember/StrutsInTrusses"
 
 let renderedOnce = false;
 
@@ -80,6 +81,10 @@ function App() {
         <Route
           path="/design/connections/beam-to-column/end_plate"
           element={<BeamToColumnEndPlate />}
+        />
+        <Route
+          path="/design/compression-member/struts_in_trusses"
+          element={<StrutsInTrusses />}
         />
         <Route path="/user" element={<UserAccount />} />
       </Route>
