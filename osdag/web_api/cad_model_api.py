@@ -43,9 +43,11 @@ class CADGeneration(View):
         cover_plate_welded_cookie_id = request.COOKIES.get("cover_plate_welded_connection_session")
         beam_column_end_plate_cookie_id = request.COOKIES.get("beam_to_column_end_plate_connection_session")
         beam_beam_end_plate_cookie_id = request.COOKIES.get("beam_beam_end_plate_connection_session")
+        struts_in_trusses_cookie_id = request.COOKIES.get("struts_in_trusses_connection_session")
+
         
         #Ensure that at least one session exists
-        if not fin_plate_cookie_id and not cleat_angle_cookie_id and not seated_angle_cookie_id and not end_plate_cookie_id and not cover_plate_bolted_cookie_id and not beam_beam_end_plate_cookie_id and not cover_plate_welded_cookie_id and not beam_column_end_plate_cookie_id:
+        if not fin_plate_cookie_id and not cleat_angle_cookie_id and not seated_angle_cookie_id and not end_plate_cookie_id and not cover_plate_bolted_cookie_id and not beam_beam_end_plate_cookie_id and not cover_plate_welded_cookie_id and not beam_column_end_plate_cookie_id and not struts_in_trusses_cookie_id:
             return JsonResponse({"status": "error", "message": "Please open a module"}, status=400)
     
         #determine the correct sessionId and fetch design session
@@ -73,6 +75,9 @@ class CADGeneration(View):
         elif beam_column_end_plate_cookie_id:
             cookie_id = beam_column_end_plate_cookie_id
             session_type = "BeamToColumnEndPlate"
+        elif struts_in_trusses_cookie_id:
+            cookie_id = struts_in_trusses_cookie_id
+            session_type = "StrutsInTrusses"
         
         # # Error Checking: If design session exists.
         # if not Design.objects.filter(cookie_id=cookie_id).exists():
@@ -89,7 +94,11 @@ class CADGeneration(View):
             return JsonResponse({"status": "error", "message": f"Unable to retrieve session - {repr(e)}"}, status=500)
         
         # Check for FreeCAD availability
+        # Check for FreeCAD availability
         command = shutil.which("FreeCADCmd")
+        print(f"Detected FreeCADCmd path: {command}")
+        command = "D:\\Program Files\\FreeCAD 1.0\\bin\\freecadcmd.exe"
+
         if not command:
             return JsonResponse({"status": "error", "message": "FreeCAD is not installed or not in system PATH."}, status=500)
         
@@ -115,6 +124,8 @@ class CADGeneration(View):
             sections = ["Model", "Beam", "Connector"]
         elif session_type == "BeamToColumnEndPlate":
             sections = ["Model", "Beam", "Column", "Connector"]
+        elif session_type == "StrutsInTrusses":
+            sections = ["Model"]
         else:
             return JsonResponse({"status": "error", "message": "Unknown module type"}, status=400)
         

@@ -18,6 +18,7 @@ import logging
 # from design_type.connection.fin_plate_connection import FinPlateConnection
 # from design_type.connection.column_cover_plate import ColumnCoverPlate
 
+
 class OurLog(logging.Handler):
 
     def __init__(self, key):
@@ -25,6 +26,17 @@ class OurLog(logging.Handler):
 
         self.key = key
         # self.key.setText("<h1>Welcome to Osdag</h1>")
+
+    def handle(self, record):
+        msg = self.format(record)
+        if record.levelname == 'WARNING':
+            msg = "<span style='color: blue;'>"+ msg +"</span>"
+        elif record.levelname == 'ERROR':
+            msg = "<span style='color: red;'>"+ msg +"</span>"
+        elif record.levelname == 'INFO':
+            msg = "<span style='color: green;'>" + msg + "</span>"
+        self.key.append(msg)
+
 
     def handle(self, record):
         msg = self.format(record)
@@ -334,6 +346,7 @@ KEY_DISP_ENDPLATE = 'End Plate Connection'
 KEY_DISP_CLEATANGLE = 'Cleat Angle Connection'
 KEY_DISP_SEATED_ANGLE = 'Seated Angle Connection'
 KEY_DISP_BASE_PLATE = 'Base Plate Connection'
+KEY_DISP_TRUSS_BOLTED = 'Truss Connection Bolted'
 
 KEY_DISP_BEAMCOVERPLATE = 'Beam-to-Beam Cover Plate Bolted Connection'
 KEY_DISP_COLUMNCOVERPLATE = 'Column-to-Column Cover Plate Bolted Connection'
@@ -344,10 +357,315 @@ KEY_DISP_COLUMNENDPLATE = 'Column-to-Column End Plate Connection'
 KEY_DISP_BCENDPLATE = 'Beam-to-Column End Plate Connection'
 KEY_DISP_TENSION_BOLTED = 'Tension Member Design - Bolted to End Gusset'
 KEY_DISP_TENSION_WELDED = 'Tension Member Design - Welded to End Gusset'
-KEY_DISP_COMPRESSION = 'Compression Member'
 KEY_DISP_BB_EP_SPLICE = 'Beam-to-Beam End Plate Connection'
+KEY_DISP_COMPRESSION = 'Compression Member'
+KEY_DISP_COMPRESSION_STRUT = 'Compression Member Design - Strut Design'
 
 DISP_TITLE_CM = 'Connecting Members'
+
+# Compression Members
+KEY_DISP_COMPRESSION_COLUMN = 'Columns with known support conditions'
+KEY_DISP_COMPRESSION_Strut = 'Struts in Trusses'
+KEY_SECTION_PROPERTY = 'Section Property'
+KEY_SECTION_DATA = 'Section Data'
+KEY_MEMBER_PROPERTY = 'Member Property'
+KEY_MEMBER_DATA = 'Member.Data'
+KEY_SECTION_PROFILE = 'Section.Profile'
+KEY_DISP_SECTION_PROFILE = 'Section Profile *'
+VALUES_SEC_PROFILE_COLUMN = ['Beams', 'Columns', 'RHS', 'SHS', 'CHS', 'Angles']
+KEY_SECTION_DEFINITION = 'SectionDefinition'
+KEY_DISP_SECTION_DEFINITION = 'Section Definition*'
+KEY_DISP_MEMBER_DATA = 'Member Data'
+KEY_ACTUAL_LENGTH = 'Length.Actual'
+KEY_DISP_ACTUAL_LENGTH = 'Actual Length'
+KEY_COLUMN_DESIGN = 'Column Design'
+KEY_COLUMN_CAPACITY = 'Column.Capacity'
+KEY_DISP_COLUMN_CAPACITY = 'Column Capacity (kN)'
+KEY_ACTUAL_LEN_ZZ = 'Actual.Length_zz'
+KEY_DISP_ACTUAL_LEN_ZZ = 'Actual Length (z-z), mm'
+KEY_ACTUAL_LEN_YY = 'Actual.Length_yy'
+KEY_DISP_ACTUAL_LEN_YY = 'Actual Length (y-y), mm'
+KEY_UNSUPPORTED_LEN_ZZ = 'Unsupported.Length_zz'
+KEY_DISP_UNSUPPORTED_LEN_ZZ = 'Unsupported Length (z-z), mm *'
+KEY_UNSUPPORTED_LEN_YY = 'Unsupported.Length_yy'
+KEY_DISP_UNSUPPORTED_LEN_YY = 'Unsupported Length (y-y), mm *'
+KEY_DESIGN_COMPRESSION = 'Design Results'
+KEY_DESIGN_STRENGTH_COMPRESSION = 'Design.Strength'
+KEY_MIN_DESIGN_COMP_STRESS = 'MinCompStress'
+KEY_MIN_DESIGN_COMP_STRESS_VAL = 'Min. Design Comp.Stress (MPa)'
+KEY_MAT_STRESS = 'MaterialStress'
+KEY_DISP_MAT_STRESS = 'fy/gamma_m0'
+KEY_FCD = 'Fcd'
+KEY_DISP_FCD = 'f_cd'
+KEY_DISP_DESIGN_STRENGTH_COMPRESSION = 'Design Strength (kN)'
+DISP_TITLE_OPTIMUM_SECTION = 'Optimum Section'
+KEY_TITLE_OPTIMUM_DESIGNATION = 'Optimum.Designation'
+KEY_DISP_TITLE_OPTIMUM_DESIGNATION = 'Designation'
+KEY_OPTIMUM_UR_COMPRESSION = 'Optimum.UR'
+KEY_DISP_OPTIMUM_UR_COMPRESSION = 'Utilization Ratio'
+KEY_OPTIMUM_SC = 'Optimum.SectionClassification'
+KEY_DISP_OPTIMUM_SC = 'Section Classification'
+DISP_TITLE_ZZ = 'Major Axis (z-z)'
+DISP_TITLE_YY = 'Minor Axis (y-y)'
+KEY_EFF_LEN_ZZ = 'Major.Effective_Length'
+KEY_DISP_EFF_LEN_ZZ = 'Effective Length (m)'
+KEY_EFF_LEN_YY = 'MinorEffLen'
+KEY_DISP_EFF_LEN_YY = 'Effective Length (m)'
+KEY_EULER_BUCKLING_STRESS_ZZ = 'MajorBucklingStress'
+KEY_DISP_EULER_BUCKLING_STRESS_ZZ = 'Euler Buckling Stress (MPa)'
+KEY_EULER_BUCKLING_STRESS_YY = 'MinorBucklingStress'
+KEY_DISP_EULER_BUCKLING_STRESS_YY = 'Euler Buckling Stress (MPa)'
+KEY_BUCKLING_CURVE_ZZ = 'MajorBC'
+KEY_DISP_BUCKLING_CURVE_ZZ = 'Buckling Curve Classification'
+KEY_BUCKLING_CURVE_YY = 'MinorBC'
+KEY_DISP_BUCKLING_CURVE_YY = 'Buckling Curve Classification'
+KEY_IMPERFECTION_FACTOR_ZZ = 'MajorIF'
+KEY_DISP_IMPERFECTION_FACTOR_ZZ = 'Imperfection Factor'
+KEY_IMPERFECTION_FACTOR_YY = 'MinorIF'
+KEY_DISP_IMPERFECTION_FACTOR_YY = 'Imperfection Factor'
+KEY_SR_FACTOR_ZZ = 'MajorSRF'
+KEY_DISP_SR_FACTOR_ZZ = 'Stress Reduction Factor'
+KEY_SR_FACTOR_YY = 'MinorSRF'
+KEY_DISP_SR_FACTOR_YY = 'Stress Reduction Factor'
+KEY_NON_DIM_ESR_ZZ = 'MajorNDESR'
+KEY_DISP_NON_DIM_ESR_ZZ = 'Non-dimensional Effective SR'
+KEY_NON_DIM_ESR_YY = 'MinorNDESR'
+KEY_DISP_NON_DIM_ESR_YY = 'Non-dimensional Effective SR'
+KEY_EFF_SEC_AREA_ZZ = 'MajorEffSecArea'
+KEY_DISP_EFF_SEC_AREA_ZZ = 'Effective Sectional Area (mm2)'
+KEY_EFF_SEC_AREA_YY = 'MinorEffSecArea'
+KEY_DISP_EFF_SEC_AREA_YY = 'Effective Sectional Area (mm2)'
+KEY_COMP_STRESS_ZZ = 'MajorDCS'
+KEY_DISP_COMP_STRESS_ZZ = 'Design Compressive Stress (MPa)'
+KEY_COMP_STRESS_YY = 'MinorDCS'
+KEY_DISP_COMP_STRESS_YY = 'Design Compressive Stress (MPa)'
+KEY_DISP_DESIGN_STRENGTH_YY = 'Pd (kN)'
+KEY_DISP_DESIGN_STRENGTH_ZZ = 'Pd (kN)'
+KEY_DESIGN_STRENGTH_YY = 'DesignStrength.y-y'
+KEY_DESIGN_STRENGTH_ZZ = 'DesignStrength.z-z'
+##Strut Design
+###################################
+KEY_SHEAR_STRENGTH = 'Shear.Strength'
+KEY_MOMENT_STRENGTH = 'Moment.Strength'
+KEY_DISP_HIGH_SHEAR= 'High Shear Check'
+KEY_HIGH_SHEAR = 'Shear.High'
+KEY_DISP_DESIGN_STRENGTH_SHEAR = 'Shear Strength (kN)' # Design 
+KEY_DISP_DESIGN_STRENGTH_MOMENT = 'Moment Strength (kNm)' # Design 
+KEY_DISP_REDUCE_STRENGTH_MOMENT = 'Reduced Moment Strength (kNm)'
+KEY_EULER_BUCKLING_STRESS = 'MajorBucklingStress'
+KEY_DISP_EULER_BUCKLING_STRESS = 'Buckling Stress (MPa)' # Euler 
+KEY_EFF_SEC_AREA = 'MajorEffSecArea'
+KEY_DISP_EFF_SEC_AREA = 'Eff. Sectional Area (mm<sup>2</sup>)' # ective
+KEY_EFF_LEN = 'Major.Effective_Length'
+KEY_DISP_EFF_LEN = 'Eff. Length (m)' # ective
+KEY_BUCKLING_CURVE = 'BucklingCurve'
+KEY_DISP_BUCKLING_CURVE = 'Buckling Curve' #  Classification
+KEY_IMPERFECTION_FACTOR = 'ImperfectionFactor'
+KEY_DISP_IMPERFECTION_FACTOR = 'Imperfection' # Factor
+KEY_SR_FACTOR = 'StressReductionFactor'
+KEY_DISP_SR_FACTOR = 'Stress Reduction' # Factor
+KEY_NON_DIM_ESR = 'NDESR'
+KEY_DISP_NON_DIM_ESR = 'ND Eff. Senderness'
+KEY_ALLOW_CLASS = 'Optimum.Class'
+KEY_DISP_CLASS = 'Semi-compact sections'
+DISP_TITLE_STRUT_SECTION = 'Section Details'
+KEY_ALLOW_LOAD = 'Load.Type'
+KEY_DISP_LOAD = 'Type of Load'
+KEY_DISP_ESR = 'Effective SR'
+KEY_ESR = 'ESR'
+KEY_SR_lambdavv = 'ESRLambdavv'
+KEY_DISP_SR_lambdavv = 'Lambda v-v'
+KEY_SR_lambdapsi = 'ESRLambdapsi'
+KEY_DISP_SR_lambdapsi = 'Lambda psi'
+Buckling_Type = 'Type of Buckling'
+End_Connection_title = 'End Connection Details'
+KEY_COMP_STRESS = 'MinorDCS'
+KEY_DISP_COMP_STRESS = 'Compressive Stress (MPa)'
+
+KEY_Buckling_Out_plane = 1.0
+KEY_Buckling_In_plane =  1.0
+Buckling_Out_plane = ' Out of Plane'
+Buckling_In_plane =  ' In Plane'
+Load_type1 = 'Concentric Load'
+Load_type2 = 'Leg Load'
+Strut_load = list((Load_type1, Load_type2))
+# IMG_STRUT_1 = str(files("osdag.data.ResourceFiles.images").joinpath("bA.png"))
+# IMG_STRUT_2 = str(files("osdag.data.ResourceFiles.images").joinpath("bBBA.png"))
+# IMG_STRUT_3 = str(files("osdag.data.ResourceFiles.images").joinpath("back_back_same_side_angles.png"))
+# VALUES_IMG_STRUT = list(( IMG_STRUT_1, IMG_STRUT_2, IMG_STRUT_3))
+KEY_BOLT_Number = 1.0
+Strut_Bolt_Number = 'Number of Bolts'
+Profile_name_1 = 'Angles'
+Profile_name_2 = 'Back to Back Angles - Same side of gusset'
+Profile_name_3 = 'Back to Back Angles - Opposite side of gusset'
+loc_type1 = 'Long Leg'
+loc_type2 = 'Short Leg'
+VALUES_SEC_PROFILE_Compression_Strut = list((Profile_name_1, Profile_name_2, Profile_name_3)) #other sections can be added later the elements and not before 'Star Angles', 'Channels', 'Back to Back Channels'
+# Profile_2_img1 = str(files("osdag.data.ResourceFiles.images").joinpath("bblssg_eq.png")) # Back to back Long leg on same side of gusset for equal angle
+# Profile_2_img2 = str(files("osdag.data.ResourceFiles.images").joinpath("bbsssg_eq.png"))# Back to back short leg on same side of gusset for equal angle
+# Profile_2_img3 = str(files("osdag.data.ResourceFiles.images").joinpath("bblssg_ueq.png"))# Back to back Long leg on same side of gusset for unequal angle
+# Profile_2_img4 = str(files("osdag.data.ResourceFiles.images").joinpath("bbsssg_ueq.png"))# Back to back short leg on same side of gusset for unequal angle
+
+KEY_ALLOW_CLASS1 = 'Optimum.Class1'
+KEY_DISP_CLASS1 = 'Choose Plastic sections'
+KEY_ALLOW_CLASS2 = 'Optimum.Class2'
+KEY_DISP_CLASS2 = 'Choose Compact sections'
+KEY_ALLOW_CLASS3 = 'Optimum.Class3'
+KEY_DISP_CLASS3 = 'Choose Semi-compact sections'
+KEY_ALLOW_CLASS4 = 'Optimum.Class4'
+KEY_DISP_CLASS4 = 'Choose Slender sections'
+KEY_ALLOW_UR = 'Optimum.AllowUR'
+KEY_DISP_UR = 'Allowable Utilization Ratio (UR)'
+KEY_OPTIMIZATION_PARA = 'Optimum.Para'
+KEY_DISP_OPTIMIZATION_PARA = 'Optimization Parameter'
+KEY_EFFECTIVE_AREA_PARA = 'Effective.Area_Para'
+KEY_DISP_EFFECTIVE_AREA_PARA = 'Effective Area Parameter'
+KEY_DISP_SECTION_DEFINITION_DP = 'Section Definition (Table 2)'
+KEY_DISP_OPTIMIZATION_STEEL_COST = 'Cost'
+KEY_STEEL_COST = 'Steel.Cost'
+KEY_DISP_STEEL_COST = 'Steel cost (INR / per kg)'
+
+###################################
+#Flexure Members
+###################################
+KEY_Plastic = "Plastic"
+KEY_Compact = "Compact"
+KEY_SemiCompact = "Semi-Compact"
+KEY_Flexure_Member_MAIN_MODULE = 'Flexure Member'
+KEY_DISP_FLEXURE = 'Flexural Members - Simply Supported'
+KEY_DISP_FLEXURE2 = 'Flexural Members - Cantilever'
+KEY_DISP_FLEXURE3 = 'Flexural Members'
+
+KEY_DISP_PLASTIC_STRENGTH_MOMENT = 'Plastic Strength (kNm)'
+KEY_DISP_Bending_STRENGTH_MOMENT = 'Bending Strength (kNm)'
+KEY_DISP_LTB_Bending_STRENGTH_MOMENT = 'Lateral Torsional Buckling Strength (kNm)'
+
+KEY_DISP_betab_constatnt= 'Beta<sub>b</sub>'
+KEY_betab_constatnt= 'Beta.Constant'
+KEY_BUCKLING_STRENGTH= 'Buckling.Strength'
+KEY_DISP_BUCKLING_STRENGTH= 'Buckling Strength (kN)'
+KEY_WEB_CRIPPLING= 'Crippling.Strength'
+KEY_DISP_CRIPPLING_STRENGTH = 'Crippling Strength (kN)'
+KEY_DISP_LTB= 'Lateral Torsional Buckling Details'
+KEY_DISP_Elastic_CM= 'Critical Moment (M<sub>cr</sub>)' # Elastic 
+KEY_DISP_Elastic_CM_latex= 'Elastic Critical Moment(kNm)' # 
+KEY_DISP_T_constatnt= 'Torsional Constant (mm<sup>4</sup>)' #  (I<sub>t</sub>)
+KEY_DISP_W_constatnt= 'Warping Constant (mm<sup>6</sup>)' # (I<sub>w</sub>)
+KEY_LTB= 'L.T.B.Details'
+KEY_Elastic_CM= 'Elastic.Moment'
+KEY_T_constatnt= 'T.Constant'
+KEY_W_constatnt= 'W.Constant'
+KEY_IMPERFECTION_FACTOR_LTB = 'Imperfection.LTB'
+KEY_SR_FACTOR_LTB = 'SR.LTB'
+KEY_NON_DIM_ESR_LTB = 'NDESR.LTB'
+# KEY_LTB= 'Lateral Torsional Buckling Details'
+KEY_WEB_BUCKLING= 'Web Buckling Details'
+KEY_BEARING_LENGTH = 'Bearing.Length'
+# Simply_Supported_img = str(files("osdag.data.ResourceFiles.images").joinpath("ss_beam.png"))
+# Cantilever_img = str(files("osdag.data.ResourceFiles.images").joinpath("c_beam.png"))
+KEY_LENGTH_OVERWRITE = 'Length.Overwrite'
+KEY_DISPP_LENGTH_OVERWRITE = 'Effective Length Parameter'
+KEY_DISP_BEAM_MOMENT = 'Bending Moment (kNm)(M<sub>z-z</sub>)'
+KEY_DISP_BEAM_MOMENT_Latex = 'Bending Moment (kNm)' # ($M_{z-z}$)
+KEY_SUPP_TYPE = 'Member.Type'
+DISP_TITLE_ISECTION = 'I Sections'
+
+KEY_DISP_DESIGN_TYPE_FLEXURE = 'Laterally Supported'
+KEY_DESIGN_TYPE_FLEXURE = 'Flexure.Type'
+KEY_BEAM_SUPP_TYPE = 'Support Type *'
+KEY_BEAM_SUPP_TYPE_DESIGN = 'Design Support Type'
+KEY_DISP_DESIGN_TYPE2_FLEXURE = 'Laterally Unsupported'
+KEY_DESIGN_TYPE2_FLEXURE = 'Laterally.Unsupported'
+KEY_DISP_BENDING = 'Axis of Bending'
+KEY_DISP_BENDING1 = 'Major'
+KEY_DISP_BENDING2 = 'Minor'
+VALUES_BENDING_TYPE = list((KEY_DISP_BENDING2, KEY_DISP_BENDING1))
+VALUES_SUPP_TYPE = list((KEY_DISP_DESIGN_TYPE_FLEXURE, KEY_DISP_DESIGN_TYPE2_FLEXURE)) #[KEY_DISP_DESIGN_TYPE_FLEXURE, KEY_DISP_DESIGN_TYPE2_FLEXURE]
+VALUES_SUPP_TYPE_temp = list((KEY_DISP_BENDING1 + " " + KEY_DISP_DESIGN_TYPE_FLEXURE, KEY_DISP_BENDING2 + " " + KEY_DISP_DESIGN_TYPE2_FLEXURE, KEY_DISP_BENDING1 + " " + KEY_DISP_DESIGN_TYPE2_FLEXURE)) #[KEY_DISP_DESIGN_TYPE_FLEXURE, KEY_DISP_DESIGN_TYPE2_FLEXURE]
+KEY_BENDING = 'Bending.type'
+KEY_SUPPORT = 'Flexure.Support'
+KEY_DISP_SUPPORT = 'End Conditions'
+KEY_DISP_SUPPORT1 = 'Simply Supported'
+KEY_DISP_SUPPORT2 = 'Cantilever'
+KEY_DISP_SUPPORT_LIST = list((KEY_DISP_SUPPORT1, KEY_DISP_SUPPORT2)) #[KEY_DISP_SUPPORT1, KEY_DISP_SUPPORT2]
+# KEY_SUPPORT1 = 'SimpSupport.Torsional'
+# KEY_SUPPORT2 = 'SimpSupport.Warping'
+KEY_DISP_LENGTH_BEAM = 'Effective Span (m)*'
+KEY_LOAD = 'Loading.Condition'
+KEY_DISP_LOAD = 'Loading Condition'
+KEY_DISP_LOAD1 ='Normal'
+KEY_DISP_LOAD2 = 'Destabilizing'
+KEY_DISP_LOAD_list = list((KEY_DISP_LOAD1, KEY_DISP_LOAD2))
+KEY_TORSIONAL_RES = 'Torsion.restraint'
+DISP_TORSIONAL_RES = 'Torsional restraint *'
+Torsion_Restraint1 = 'Fully Restrained'
+Torsion_Restraint2 = 'Partially Restrained-support connection'
+Torsion_Restraint3 = 'Partially Restrained-bearing support'
+Torsion_Restraint_list = list(( Torsion_Restraint1, Torsion_Restraint2, Torsion_Restraint3))
+KEY_WARPING_RES = 'Warping.restraint'
+DISP_WARPING_RES = 'Warping restraint *'
+Warping_Restraint1 = 'Both flanges fully restrained'
+Warping_Restraint2 = 'Compression flange fully restrained'
+# Warping_Restraint3 = 'Both flanges fully restrained'
+Warping_Restraint4 = 'Compressicm flange partially restrained'
+Warping_Restraint5 = 'Warping not restrained in both flanges'
+Warping_Restraint_list = list(( Warping_Restraint1, Warping_Restraint2, Warping_Restraint4, Warping_Restraint5))
+DISP_SUPPORT_RES = 'Support restraint *'
+KEY_SUPPORT_TYPE = 'Cantilever.Support'
+Support1 = 'Continous, with lateral restraint to top flange'
+Support2 = 'Continous, with partial torsional restraint'
+Support3 = 'Continous, with lateral and torsional restraint'
+Support4 = 'Restrained laterally, torsionally and against rotation on flange'
+Supprt_Restraint_list = list(( Support1, Support2, Support3, Support4))
+DISP_TOP_RES = 'Top restraint *'
+KEY_SUPPORT_TYPE2 = 'Cantilever.Top'
+Top1 = 'Free'
+Top2 = 'Lateral restraint to top flange'
+Top3 = 'Torsional rwstraint'
+Top4 = 'Lateral and Torsional restraint'
+Top_Restraint_list = list(( Top1, Top2, Top3, Top4))
+KEY_WEB_BUCKLING_option = ['Method A','Method B']
+KEY_BUCKLING_METHOD = 'Buckling.Method'
+KEY_ShearBuckling = 'Shear Buckling Design Method '
+KEY_ShearBucklingOption = 'S.B.Methods'
+KEY_DISP_SB_Option = ['Simple Post Critical', 'Tension Field Test']
+KEY_DISP_TENSION_HOLES = 'Tension Zone'
+KEY_DISP_Web_Buckling = 'Web Buckling'
+KEY_DISP_Utilization_Ratio = 'Utilization Ratio'
+KEY_DISP_Web_Buckling_Support = 'Web Buckling @Support'
+KEY_DISP_I_eff_latex = '$I_{eff}$web'
+KEY_DISP_A_eff_latex = '$A_{eff}$web'
+KEY_DISP_r_eff_latex = '$r_{eff}$web'
+KEY_DISP_K_v_latex = '$K_{v}$'
+KEY_DISP_Elastic_Critical_shear_stress_web = 'Elastic Critical Shear Stress Web($N/mm^2$)' #(\tau_{crc})
+KEY_DISP_Transverse_Stiffener_spacing = 'Spacing of Transverse Stiffeners(c)(mm)'
+KEY_DISP_slenderness_ratio_web = 'Web Slenderness ratio($\lambda_w$)'
+KEY_DISP_BUCKLING_STRENGTH= 'Buckling Resistance (kN)'
+KEY_DISP_reduced_moment= 'Reduced moment (Nmm)'
+# KEY_DISP_reduced_moment= 'Reduced moment (N_f)'
+KEY_DISP_tension_field_incline= 'Tension field inclination($\phi$)'
+KEY_DISP_Yield_Strength_Tension_field = 'Yield Strength of Tension field(f_v)($N/mm^2$)'
+KEY_DISP_AnchoragelengthTensionField= 'Anchorage length of Tension Field(s)(mm)'
+KEY_DISP_WidthTensionField= 'Width of Tension Field($w_{tf}$)'
+
+###################################
+# Plate Girder
+###################################
+KEY_PLATE_GIRDER_MAIN_MODULE = 'PLATE GIRDER'
+KEY_DISP_PLATE_GIRDER_WELDED = 'PLATE GIRDER - WELDED'
+KEY_tf = 'TF.Data'
+KEY_tw = 'TW.Data'
+KEY_dw = 'DW.Data'
+KEY_bf = 'BF.Data'
+KEY_DISP_tf = 'Flange Thickness(mm)'
+KEY_DISP_tw = 'Web Thickness(mm)'
+KEY_DISP_dw = 'Web Depth(mm)'
+KEY_DISP_bf = 'Flange Width(mm)'
+KEY_IntermediateStiffener = 'IntermediateStiffener.Data'
+KEY_DISP_IntermediateStiffener = 'Intermediate Stiffener'
+KEY_DISP_Plate_Girder_PROFILE = 'Section Profile'
+KEY_IntermediateStiffener_spacing = 'IntermediateStiffener.Spacing'
+KEY_DISP_IntermediateStiffener_spacing = 'Intermediate Stiffener Spacing'
 
 ###################################
 # All Input Keys
@@ -407,7 +725,7 @@ KEY_CONNECTOR_FY_20 = 'Connector.Fy_20'         #Extra Keys for DP Display
 KEY_CONNECTOR_FY_20_40 = 'Connector.Fy_20_40'   #Extra Keys for DP Display
 KEY_CONNECTOR_FY_40 = 'Connector.Fy_40'         #Extra Keys for DP Display
 
-KEY_PLATETHK = 'Connector.Plate.Thickness_List'
+KEY_PLATETHK = 1.0
 KEY_FLANGEPLATE_PREFERENCES = 'Connector.Flange_Plate.Preferences'
 KEY_FLANGEPLATE_THICKNESS = 'Connector.Flange_Plate.Thickness_list'
 KEY_WEBPLATE_THICKNESS = 'Connector.Web_Plate.Thickness_List'

@@ -2,14 +2,13 @@
 from osdag_api.validation_utils import validate_arr, validate_num, validate_string
 from osdag_api.errors import MissingKeyError, InvalidInputTypeError
 from osdag_api.utils import contains_keys, custom_list_validation, float_able, int_able, is_yes_or_no, validate_list_type
-import osdag_api.modules.shear_connection_common as scc
+import osdag_api.modules.struts_in_trusses_common as scc
 from OCC.Core import BRepTools
 from OCC.Core.STEPControl import STEPControl_Writer, STEPControl_AsIs
 from OCC.Core.IGESControl import IGESControl_Writer
 from cad.common_logic import CommonDesignLogic
 # Will log a lot of unnessecary data.
-from design_type.connection.fin_plate_connection import FinPlateConnection
-from design_type.connection.end_plate_connection import EndPlateConnection
+from design_type.compression_member.compression import Compression
 import sys
 import os
 import typing
@@ -35,10 +34,14 @@ def get_required_keys() -> List[str]:
         "Detailing.Gap",
         "Load.Axial",
         "Load.Shear",
+        "Member.Length",
+        "End_1",
+        "End_2",
         "Material",
         "Member.Supported_Section.Designation",
         "Member.Supported_Section.Material",
-        "Member.Supporting_Section.Designation",
+        "Member.Material:",
+        "Member.Designation",
         "Member.Supporting_Section.Material",
         "Module",
         "Weld.Fab",
@@ -281,15 +284,18 @@ def validate_input_new(input_values: Dict[str, Any]) -> None:
         validate_arr(key[0], key[1])
 
 
-def create_module() -> EndPlateConnection:
-    """Create an instance of the End plate connection module design class and set it up for use"""
-    module = EndPlateConnection()  # Create an instance of the EndPlateConnection
+def create_module() -> Compression:
+    """Create an instance of the Struts In Trusses module design class and set it up for use"""
+    module = Compression()  # Create an instance of the StrutsInTrusses
+    print("after module = Compression and before create module line, file: struts_in_trusses.py")
     module.set_osdaglogger(None)
+    print("after set_osdaglogger at create module line, file: struts_in_trusses.py")
     return module
 
 
-def create_from_input(input_values: Dict[str, Any]) -> EndPlateConnection:
-    """Create an instance of the End plate connection module design class from input values."""
+def create_from_input(input_values: Dict[str, Any]) -> Compression:
+    """Create an instance of the Struts In Trusses module design class from input values."""
+    print(" at create_from_input")
     # validate_input(input_values)
     try : 
         module = create_module()  # Create module instance.
@@ -299,7 +305,8 @@ def create_from_input(input_values: Dict[str, Any]) -> EndPlateConnection:
     
     # Set the input values on the module instance.
     try : 
-        module.set_input_values(input_values)
+        module.set_input_values(design_dictionary=input_values)
+        print("after set_input_values, file: struts_in_tursses")
     except Exception as e : 
         print('e in set_input_values : ' , e)
         print('error in setting the input values')
@@ -308,6 +315,7 @@ def create_from_input(input_values: Dict[str, Any]) -> EndPlateConnection:
 
 
 def generate_output(input_values: Dict[str, Any]) -> Dict[str, Any]:
+    print("inside generate output")
     """
     Generate, format and return the input values from the given output values.
     Output format (json): {
@@ -320,18 +328,18 @@ def generate_output(input_values: Dict[str, Any]) -> Dict[str, Any]:
     """
     output = {}  # Dictionary for formatted values
     module = create_from_input(input_values)  # Create module from input.
-    print('module : ' , module)
+    print('module : ' , vars(module))
     print('type of module : ' , type(module))
 
     # Generate output values in unformatted form.
     raw_output_text = module.output_values(True)
-    raw_output_spacing = module.spacing(True)  # Generate output val
-    raw_output_capacities = module.capacities(True)
-    raw_output_bolt_capacity = module.bolt_capacity_details(True)
+    # raw_output_spacing = module.spacing(True)  # Generate output val
+    # raw_output_capacities = module.capacities(True)
+    # raw_output_bolt_capacity = module.bolt_capacity_details(True)
     logs = module.logs
-    # print("LOGSS AREE ",module.logs)
-    raw_output = raw_output_capacities + raw_output_spacing + raw_output_text + raw_output_bolt_capacity
-    # os.system("clear")
+    print("LOGSS AREE ",module.logs)
+    raw_output = raw_output_text
+    print("raw output", raw_output)
     # Loop over all the text values and add them to ouptut dict.
     for param in raw_output:
         if param[2] == "TextBox":  # If the parameter is a text output,
@@ -343,9 +351,10 @@ def generate_output(input_values: Dict[str, Any]) -> Dict[str, Any]:
                 "label": label,
                 "value": value
             }  # Set label, key and value in output
+    print("ending the generate output function")
     return output, logs
 
-
+print("line 374")
 def create_cad_model(input_values: Dict[str, Any], section: str, session: str) -> str:
     """Generate the CAD model from input values as a BREP file. Return file path."""
     if section not in ("Model", "Beam", "Column", "Plate"):  # Error checking: If section is valid.
@@ -353,7 +362,7 @@ def create_cad_model(input_values: Dict[str, Any], section: str, session: str) -
             "section", "'Model', 'Beam', 'Column' or 'Plate'")
     module = create_from_input(input_values)  # Create module from input.
     print('module from input values : ' , module)
-    print("Connectivity", module.connectivity)
+    # print("Connectivity", module.connectivity)
     print("module", module.module)
     print("Mainmodule", module.mainmodule)
     # Object that will create the CAD model.
@@ -367,9 +376,12 @@ def create_cad_model(input_values: Dict[str, Any], section: str, session: str) -
         scc.setup_for_cad(cld, module)
     except Exception as e : 
         print('Error in setting up cad e : ' , e)
+    
+    print("at line 380")
 
     # The section of the module that will be generated.
     cld.component = section
+    print(cld)
     
     try : 
         model = cld.create2Dcad()  # Generate CAD Model.

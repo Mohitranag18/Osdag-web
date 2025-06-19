@@ -7749,3 +7749,298 @@ def prov_moment_load_bp(moment_input, min_mc, app_moment_load, moment_capacity, 
 # def dia_plate_thk_provided(t_wc,)
 #     t_wc
 # t_wc = round((1.9 * self.load_moment_effective * 1e6) / (self.column_D * self.beam_D * self.column_fy), 2)
+
+def cl_8_7_1_5_buckling_curve(sub = 'c'):
+    """
+    Author: Rutvik J
+
+    """
+
+    sub = str(sub).upper()
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} &= ' + sub + r' \\'))
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.8.7.3.1}] \end{aligned}'))
+    return slender_eqn
+
+def cl_8_7_1_5_imperfection_factor(sub='0.49'):
+    """
+    Author: Rutvik J
+
+    """
+
+    sub = str(sub)
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} &='+ sub + r'\\'))
+
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.1.2.2}] \end{aligned}'))
+    return slender_eqn
+
+def cl_3_7_2_section_classification_angle_required(ratio_type, class_of_section=None):
+    """
+    Provide the required conditions for angle section classification based on IS 800:2007, Cl.3.7.2.
+
+    Args:
+        ratio_type: Type of ratio to be calculated ('b/t', 'd/t', 'b+d/t')
+        class_of_section: Expected classification ('Plastic', 'Compact', 'Semi-Compact', 'Slender')
+        epsilon: Material constant (float)
+
+    Returns:
+        A LaTeX equation showing the required classification conditions.
+    """
+    eqn = Math(inline=True)
+
+    if class_of_section in ["Plastic", "Compact"]:
+        eqn.append(NoEscape(r'\begin{aligned} \text{For ' + class_of_section + r' Section:} \\'))
+        eqn.append(NoEscape(r'\text{No Specific Ratio Limit} \end{aligned}'))
+    
+    elif class_of_section == "Semi-Compact":
+        if ratio_type == 'b/t':
+            eqn.append(NoEscape(r'\begin{aligned} \\'))
+            eqn.append(NoEscape(r'\frac{b}{t} \leq 15.7\varepsilon'))
+            eqn.append(NoEscape(r'\end{aligned}'))
+        elif ratio_type == 'd/t':
+            eqn.append(NoEscape(r'\begin{aligned} \\'))
+            eqn.append(NoEscape(r'\frac{d}{t} \leq 15.7\varepsilon'))
+            eqn.append(NoEscape(r'\end{aligned}'))
+        elif ratio_type == '(b+d)/t':
+            eqn.append(NoEscape(r'\begin{aligned}  \\'))
+            eqn.append(NoEscape(r'\frac{b+d}{t} \leq 25\varepsilon'))
+            eqn.append(NoEscape(r'\end{aligned}'))
+    
+    else:
+        raise ValueError("Invalid section classification. Choose from 'Plastic', 'Compact', 'Semi-Compact'.")
+    
+    return eqn
+
+def get_pass_fail(required, provided, relation='',M1=''):
+    if provided == 0 or required == 'N/A' or provided == 'N/A' or required == 0:
+        return ''
+    else:
+        if relation == 'greater':
+            if required > provided:
+                return 'Pass'
+            else:
+                return 'Fail'
+        elif relation == 'geq':
+            if required >= provided:
+                return 'Pass'
+            else:
+                return 'Fail'
+        elif relation == 'leq':
+            if required <= provided:
+                return 'Pass'
+            else:
+                return 'Fail'
+        elif relation == 'Warn':
+            if M1:
+                return 'High Shear'
+            else:
+                return 'Low Shear'
+        elif relation == 'Custom':
+            if required >= provided:
+                return 'Pass'
+            else:
+                return 'Method A'
+        else:
+            if required < provided:
+                return 'Pass'
+            else:
+                return 'Fail'
+
+def cl_3_7_2_section_classification(class_of_section=None):
+    """
+    Find class of the section
+    Args:
+         class_of_section:
+    Returns:
+    Note:
+        Reference:
+        [Ref: Table 2, cl. 3.7.2 and 3.7.4 IS 800:2007]
+
+    """
+
+    section_classification_eqn = Math(inline=True)
+    if class_of_section == int(1) or class_of_section == "Plastic":
+        section_classification_eqn.append(NoEscape(r'\begin{aligned} & \textbf{Plastic} \\ '))
+    elif class_of_section == int(2) or class_of_section == "Compact":
+        section_classification_eqn.append(NoEscape(r'\begin{aligned} & \textbf{Compact} \\ '))
+    elif class_of_section == int(3) or class_of_section == "Semi-Compact":
+        section_classification_eqn.append(NoEscape(r'\begin{aligned} & \textbf{Semi-Compact} \\ '))
+    else:
+        section_classification_eqn.append(NoEscape(r'\begin{aligned} & \textbf{Slender} \\ '))
+    section_classification_eqn.append(NoEscape(r' & [\text{Ref: Table 2, Cl.3.7.2 and 3.7.4, IS 800:2007}] \end{aligned}'))
+    return section_classification_eqn
+
+def cl_7_1_2_effective_slenderness_ratio(K, L, r, slender):
+    """
+    Calculate effective selenderness ratio
+
+    Args:
+
+         K:Constant according to the end condition (float)
+         L:Actual length of the section in mm (float)
+         r:Radius of gyration  in mm (float)
+         slender:  effective selenderness ratio (float)
+    Returns:
+        effective selenderness ratio
+    Note:
+              Reference:
+              IS 800:2007,  cl 7.1.2
+
+    """
+    K = str(K)
+    L = str(L)
+    r = str(r)
+    slender = str(slender)
+
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned}\frac{K L}{r} &= \frac{' + K + r'\times' + L + '}{' + r + r'}\\'))
+    slender_eqn.append(NoEscape(r'&= ' + slender + r'\\ \\'))
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.1.2}] \end{aligned}'))
+    return slender_eqn
+
+def cl_7_5_1_2_effective_slenderness_ratio(k1, k2, k3, lmb_v, lmb_phi, slender):
+    """
+    Calculate effective slenderness ratio based on given parameters.
+
+    Args:
+        k1: Constant k1 (float)
+        k2: Constant k2 (float)
+        k3: Constant k3 (float)
+        lmb_v: Slenderness parameter λv (float)
+        lmb_phi: Slenderness parameter λϕ (float)
+        slender: Effective slenderness ratio λe (float)
+
+    Returns:
+        LaTeX representation of the effective slenderness ratio calculation.
+
+    Note:
+        Reference:
+        IS 800:2007, Cl.7.5.1.2
+    """
+    k1 = str(k1)
+    k2 = str(k2)
+    k3 = str(k3)
+    lmb_v = str(lmb_v)
+    lmb_phi = str(lmb_phi)
+    slender = str(slender)
+
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} \lambda_e &= \sqrt{k_1 + k_2 \cdot \lambda_v^2 + k_3 \cdot \lambda_\phi^2} \\'))
+    slender_eqn.append(NoEscape(r'&= \sqrt{' + k1 + r' + ' + k2 + r' \cdot ' + lmb_v + r'^2 + ' + k3 + r' \cdot ' + lmb_phi + r'^2} \\'))
+    slender_eqn.append(NoEscape(r'&= ' + slender + r' \\ \\'))
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.5.1.2}] \end{aligned}'))
+
+    return slender_eqn
+
+def cl_3_7_2_section_classification_angle_provided(b, d, t, ratio_value, ratio_type, epsilon, class_of_section=None):
+    """
+    Provide the numerical values for angle section classification based on IS 800:2007, Cl.3.7.2.
+
+    Args:
+        b: Width of the angle leg (float)
+        d: Depth of the angle (float)
+        t: Thickness of the leg (float)
+        ratio_type: Type of ratio to be calculated ('b/t', 'd/t', 'b+d/t')
+        ratio_value: The pre-calculated ratio value (float)
+        class_of_section: Expected classification ('Plastic', 'Compact', 'Semi-Compact', 'Slender')
+        epsilon: Material constant (float)
+
+    Returns:
+        A LaTeX equation showing the numerical values and classification.
+    """
+    eqn = Math(inline=True)
+
+    if ratio_type == 'b/t':
+        eqn.append(NoEscape(r'\begin{aligned}'))
+        eqn.append(NoEscape(r'\frac{b}{t} = \frac{' + str(b) + '}{' + str(t) + '} = ' + str(ratio_value) + r' \leq 15.7\varepsilon \\'))
+        eqn.append(NoEscape(r'& \textbf{' + class_of_section + r'} \end{aligned}'))
+    
+    elif ratio_type == 'd/t':
+        eqn.append(NoEscape(r'\begin{aligned}'))
+        eqn.append(NoEscape(r'\frac{d}{t} = \frac{' + str(d) + '}{' + str(t) + '} = ' + str(ratio_value) + r' \leq 15.7\varepsilon \\'))
+        eqn.append(NoEscape(r'& \textbf{' + class_of_section + r'} \end{aligned}'))
+    
+    elif ratio_type == '(b+d)/t':
+        eqn.append(NoEscape(r'\begin{aligned}'))
+        eqn.append(NoEscape(r'\frac{b+d}{t} = \frac{' + str(b+d) + '}{' + str(t) + '} = ' + str(ratio_value) + r' \leq 25\varepsilon \\'))
+        eqn.append(NoEscape(r'& \textbf{' + class_of_section + r'} \end{aligned}'))
+    
+    else:
+        raise ValueError("Invalid ratio type. Choose from 'b/t', 'd/t', '(b+d)/t'.")
+
+    return eqn
+
+def cl_8_7_1_5_buckling_stress(E,slender,fcc):
+    """
+    Author: Rutvik J
+
+    """
+
+    E = str(E)
+    slender = str(slender)
+    fcc = str(fcc)
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} &= \frac{\pi^2 E}{\lambda^2} \\'))
+    slender_eqn.append(NoEscape(r' &= \frac{3.14^2 \times' +  E + r'}{' + slender + r'^2} \\'))
+    slender_eqn.append(NoEscape(r' &= ' + fcc + r' \\'))
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.1.2.1}] \end{aligned}'))
+    return slender_eqn
+
+def cl_8_7_1_5_phi(al, lm,phi):
+    """
+    Author: Rutvik J
+
+    """
+
+    al = str(al)
+    lm = str(lm)
+    phi = str(phi)
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} &= 0.5(1 + \alpha(\lambda - 0.2) + \lambda ^ 2) \\'))
+    slender_eqn.append(NoEscape(r' &= 0.5(1+' +  al + r'(' + lm + r'-0.2) +' + lm +  r'^2)\\'))
+    slender_eqn.append(NoEscape(r' &= ' + phi + r' \end{aligned}'))
+    # slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.1.2.1}] \end{aligned}'))
+    return slender_eqn
+
+def cl_7_1_2_design_compressive_strength(Pd, A, fcd, P,sub = 'e'):
+    """
+    Author: Rutvik J
+
+    """
+    temp = True if Pd > P else False
+    Pd = str(Pd)
+    A = str(A)
+    fcd = str(fcd)
+    P = str(P)
+    sub = str(sub)
+    # slender = str(slender)
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned}P_d &= A_' + sub + r' \times f_{cd}\\'))
+    slender_eqn.append(NoEscape(r' &= ' + A + r'\times' + fcd + r'\times 10^{-3} \\'))
+    if temp:
+        slender_eqn.append(NoEscape(r'&= ' + Pd + r'> ' + P + r' \\'))
+    else:
+        slender_eqn.append(NoEscape(r'&= ' + Pd + r'\leq ' + P + r' \\'))
+
+    slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.7.1.2}] \end{aligned}'))
+    return slender_eqn
+
+def cl_8_7_1_5_Buckling(f_y,gamma_,lambd,phi,sub1,sub='0.49'):
+    """
+    Author: Rutvik J
+
+    """
+
+    f_y = str(f_y)
+    gamma_ = str(gamma_)
+    phi = str(phi)
+    lambd = str(lambd)
+    sub = str(sub)
+    sub1 = str(sub1)
+    slender_eqn = Math(inline=True)
+    slender_eqn.append(NoEscape(r'\begin{aligned} &= \frac{f_y \gamma_{mo}}{\phi + \sqrt{\phi^2 - \lambda^2}} \leq f_y / \gamma_{mo} \\'))
+    slender_eqn.append(NoEscape(r' &= \frac{' + f_y + r'\times' + gamma_+ r'}{' + phi + r'+\sqrt{'+phi+r'^2 - '+ lambd+r'^2}} \leq ' + f_y + r'/' + gamma_+r' \\'))
+    slender_eqn.append(NoEscape(r'&='+ sub + r'\leq ' + sub1 + r'\end{aligned}'))
+    # slender_eqn.append(NoEscape(r'& [\text{Ref. IS 800:2007, Cl.8.7.1.5}] \end{aligned}'))
+    return slender_eqn

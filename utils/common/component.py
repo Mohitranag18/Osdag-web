@@ -13,6 +13,7 @@ from pylatex.utils import italic, NoEscape
 import math
 import numpy as np
 from utils.common.common_calculation import *
+from Common import get_leg_lengths
 
 
 class Bolt:

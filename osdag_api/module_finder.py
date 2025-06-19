@@ -8,14 +8,18 @@ class ModuleApiType(_Protocol):
     def validate_input(self, input_values: Dict[str, Any]) -> None:
         """Validate type for all values in design dict. Raise error when invalid"""
         pass
+    
     def get_required_keys(self) -> List[str]:
         pass
+
     def create_module(self) -> Any:
         """Create an instance of themodule design class and set it up for use"""
         pass
+
     def create_from_input(self, input_values: Dict[str, Any]) -> Any:
         """Create an instance of the module design class from input values."""
         pass
+
     def generate_output(self, input_values: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate, format and return the input values from the given output values.
@@ -28,9 +32,11 @@ class ModuleApiType(_Protocol):
         }
         """
         pass
+
     def create_cad_model(self, input_values: Dict[str, Any], section: str, session: str) -> str:
         """Generate the CAD model from input values as a BREP file. Return file path."""
         pass
+
 module_dict : Dict[str, ModuleApiType] = {
     'Fin Plate Connection': fin_plate_connection,
     'End Plate Connection': end_plate_connection,

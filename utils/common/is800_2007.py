@@ -166,8 +166,178 @@ class IS800_2007(object):
 
         return check
 
+    @staticmethod
+    def Table2_iv(depth, thickness_web, f_y):
+        """ Calculate the limiting width to thickness ratio as per Table 2 for;
+                sr. no i) Members subjected to Axial Compression
+                sr. no ii)Members subjected to Compression due to bending
+
+        Args:
+            width(b): width of the element in mm (float or int)
+            depth(d): depth of the element in mm (float or int)
+            thickness(t): thickness of the element in mm (float or int)
+            f_y: yield stress of the section material in MPa (float or int)
+            force_type: Type of failure in member ('Axial') ('Compression')
+            section_type: Type of section ('Angle') (string)
+
+        Returns:
+            A list of values with;
+            1- The class of the section as Semi-compact or Slender on account of the
+             b/t, d/t, (b+d)/t Ratio
+
+            ['Section Class', 'Ratio']
+
+        Reference: Table 2 and Cl.3.7.2, IS 800:2007
+
+        """
+        epsilon = math.sqrt(250 / int(f_y))
+        d_t = depth / thickness_web
+
+        if d_t <= (42 * epsilon) :
+            section_class = KEY_SemiCompact
+        else:
+            section_class = 'Slender'
+
+        return [section_class, d_t]
+
+    @staticmethod
+    def Table2_vi(width, depth, thickness, f_y, force_type = "Axial Compression"):
+        """ Calculate the limiting width to thickness ratio as per Table 2 for;
+                sr. no i) Members subjected to Axial Compression
+                sr. no ii)Members subjected to Compression due to bending
+
+        Args:
+            width(b): width of the element in mm (float or int)
+            depth(d): depth of the element in mm (float or int)
+            thickness(t): thickness of the element in mm (float or int)
+            f_y: yield stress of the section material in MPa (float or int)
+            force_type: Type of failure in member ('Axial') ('Compression')
+            section_type: Type of section ('Angle') (string)
+
+        Returns:
+            A list of values with;
+            1- The class of the section as Semi-compact or Slender on account of the 
+             b/t, d/t, (b+d)/t Ratio
+
+            ['Section Class', 'Ratio']
+
+        Reference: Table 2 and Cl.3.7.2, IS 800:2007
+
+        """
+        epsilon = math.sqrt(250 / int(f_y))
+
+        b_t = width / thickness
+        d_t = depth / thickness
+        bd_t = (width + depth) / thickness
+
+
+        if force_type == 'Axial Compression':
+            if b_t <= (15.7 * epsilon) and d_t<= (15.7 * epsilon) and  bd_t<= (25 * epsilon):
+                section_class = KEY_SemiCompact
+            else:
+                section_class = 'Slender'
+        else:
+            if b_t <= (9.4 * epsilon) and d_t<= (9.4 * epsilon):
+                section_class = KEY_Plastic
+            elif b_t <= (10.5 * epsilon) and d_t<= (10.5 * epsilon):
+                section_class = KEY_Compact
+            elif b_t <= (15.7 * epsilon) and d_t<= (15.7 * epsilon):
+                section_class = KEY_SemiCompact
+            else:
+                section_class = 'Slender'
+
+        return [section_class, b_t,d_t, bd_t ]
+
+    @staticmethod
+    def Table2_vii(width, depth, thickness, f_y, force_type = "Axial Compression"):
+        """ Calculate the limiting width to thickness ratio as per Table 2 for;
+                sr. no i) Members subjected to Axial Compression
+                sr. no ii)Members subjected to Compression due to bending
+
+        Args:
+            width(b): width of the element in mm (float or int)
+            depth(d): depth of the element in mm (float or int)
+            thickness(t): thickness of the element in mm (float or int)
+            f_y: yield stress of the section material in MPa (float or int)
+            force_type: Type of failure in member ('Axial') ('Compression')
+            section_type: Type of section ('Angle') (string)
+
+        Returns:
+            A list of values with;
+            1- The class of the section as Semi-compact or Slender on account of the
+             b/t, d/t, (b+d)/t Ratio
+
+            ['Section Class', 'Ratio']
+
+        Reference: Table 2 and Cl.3.7.2, IS 800:2007
+
+        """
+        epsilon = math.sqrt(250 / int(f_y))
+
+        b_t = width / thickness
+        d_t = depth / thickness
+        bd_t = (width + depth) / thickness
+
+        if force_type == 'Axial Compression':
+            if d_t<= (15.7 * epsilon) :
+                '''When adding more cases, you need to modify Strut angle'''
+                section_class = KEY_SemiCompact
+            else:
+                section_class = 'Slender'
+        else:
+            if b_t <= (9.4 * epsilon) and d_t<= (9.4 * epsilon):
+                section_class = KEY_Plastic
+            elif b_t <= (10.5 * epsilon) and d_t<= (10.5 * epsilon):
+                section_class = KEY_Compact
+            elif b_t <= (15.7 * epsilon) and d_t<= (15.7 * epsilon):
+                section_class = KEY_SemiCompact
+            else:
+                section_class = 'Slender'
+
+        return [section_class, b_t,d_t, bd_t ]
+
     # ==========================================================================
     """    SECTION  3     GENERAL DESIGN REQUIREMENTS   """
+
+    @staticmethod
+    def cl_3_8_max_slenderness_ratio(Type = 1):
+        """
+            1)  A member carrying compressive loads
+                resulting from dead loads and imposed
+                loads
+            2)  A tension member in which a reversal
+                of direct stress occurs due to loads other
+                than wind or seismic forces
+            3)  A member subjected to compression
+                forces resulting only from combination
+                with wind/earthquake actions, provided
+                the deformation of such member does
+                not adversely affect tbe stress in any
+                part of the structure
+            4)  Compression flange of a beam against
+                lateral torsional buckling
+            5)  A member normally acting m a tie in a
+                roof truss or a bracing system not
+                considered effective when subject to
+                possible reversal of stress into
+                compression resulting from the action
+                of wind or earthquake forces]]
+            6)  Members always under tension’) (other
+                than pre-tensioned members)
+        """
+        if Type == 1:
+            return 180
+        elif Type == 2:
+            return 180
+        elif Type == 3:
+            return 180
+        elif Type == 4:
+            return 180
+        elif Type == 5:
+            return 180
+        elif Type == 6:
+            return 180
+
     # ==========================================================================
     """    SECTION  4     METHODS OF STRUCTURAL ANALYSIS   """
     # ==========================================================================
@@ -285,6 +455,62 @@ class IS800_2007(object):
 
         bearing_strength = 0.45 * f_ck  # MPa (N/mm^2)
         return bearing_strength
+
+# cl. 7.1, Design strength
+    @staticmethod
+    def cl_7_1_2_design_compressisive_strength_member( effective_area , design_compressive_stress , axial_load ):
+        """
+        Args:
+            effective_area:effective sectional area as defined in 7.3.2                             (float)
+            design_compressive_stress:design compressive stress, obtained as per 7.1.2.1            (float)
+            axial_load:Load acting on column                                                        (float)
+
+        Returns:
+            Design compressive strength
+           'Pass', if the section qualifies as the required section_class, 'Fail' if it does not
+
+        Note:
+            Reference: IS 800 pg34
+            @author:Rutvik Joshi
+        """
+        design_compressive_strength= effective_area * design_compressive_stress                     #area in mm2,stress in kN/mm2
+        if axial_load < design_compressive_strength:                                                #kN
+            check = 'pass'
+        else:
+            check = 'fail'
+        return check                                                                                #str
+
+    # cl. 7.2.2 Effective Length of Prismatic Compression Members
+    @staticmethod
+    def cl_7_2_2_effective_length_of_prismatic_compression_members(unsupported_length, end_1='Fixed', end_2='Fixed'):
+        """
+        Calculate the effective length of the member as per Cl. 7.2.2 (Table 11) of IS 800:2007
+
+        Args:
+            unsupported_length: unsupported length of the member about any axis in mm (float)
+            end_1: End condition at end 1 of the member (string)
+            end_2: End condition at end 2 of the member (string)
+
+        Returns:
+            Effective length in mm
+        """
+
+        if end_1 == 'Fixed' and end_2 == 'Fixed':
+            effective_length = 0.65 * unsupported_length
+        elif end_1 == 'Fixed' and end_2 == 'Hinged':
+            effective_length = 0.8 * unsupported_length
+        elif end_1 == 'Fixed' and end_2 == 'Roller':
+            effective_length = 1.2 * unsupported_length
+        elif end_1 == 'Hinged' and end_2 == 'Hinged':
+            effective_length = 1.0 * unsupported_length
+        elif end_1 == 'Hinged' and end_2 == 'Roller':
+            effective_length = 2.0 * unsupported_length
+        elif end_1 == 'Fixed' and end_2 == 'Free':
+            effective_length = 2.0 * unsupported_length
+        else:
+            effective_length = 2.0 * unsupported_length
+
+        return effective_length
 
     # ==========================================================================
     """    SECTION  8     DESIGN OF MEMBERS SUBJECTED TO BENDING   """

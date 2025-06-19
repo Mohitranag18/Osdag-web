@@ -12,6 +12,8 @@ from osdag_api.modules.cover_plate_bolted_connection import create_from_input as
 from osdag_api.modules.beam_beam_end_plate_connection import create_from_input as beam_beam_end_plate_create_from_input
 from osdag_api.modules.cover_plate_welded_connection import create_from_input as cover_plate_welded_create_from_input
 from osdag_api.modules.beam_column_end_plate import create_from_input as beam_to_column_end_plate_create_from_input
+from osdag_api.modules.struts_in_trusses import create_from_input as struts_in_trusses_create_from_input
+
 # importing models
 from osdag.models import Design
 
@@ -49,7 +51,8 @@ class CreateDesignReport(APIView):
             'cover_plate_bolted_connection_session': cover_plate_bolted_create_from_input,
             'beam_beam_end_plate_connection_session': beam_beam_end_plate_create_from_input,
             'cover_plate_welded_connection_session': cover_plate_welded_create_from_input,
-            'beam_to_column_end_plate_connection_session':beam_to_column_end_plate_create_from_input
+            'beam_to_column_end_plate_connection_session':beam_to_column_end_plate_create_from_input,
+            'struts_in_trusses_connection_session':struts_in_trusses_create_from_input
         }
         
         cookie_id = None
